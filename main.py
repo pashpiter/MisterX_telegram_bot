@@ -2,6 +2,9 @@ import logging
 import os
 
 from aiogram import Bot, Dispatcher, asyncio, executor, types
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.dispatcher import FSMContext
+from aiogram.dispatcher.filters.state import State, StatesGroup
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -14,7 +17,13 @@ logging.basicConfig(level=logging.INFO, filename='bot_log.log', filemode='w')
 
 # Initialize bot and dispatcher
 bot = Bot(token=API_TOKEN)
-dp = Dispatcher(bot)
+dp = Dispatcher(bot, storage=MemoryStorage())
+
+
+class Form(StatesGroup):
+    """Класс для сообщения, которое нужно переслать разработчику"""
+    answer = State()
+
 
 # Reply Keyboard для отправки локации
 markup = types.ReplyKeyboardMarkup(
@@ -39,13 +48,17 @@ async def send_welcome(message: types.Message) -> types.Message:
 @dp.message_handler(commands=['help'])
 async def help_command(message: types.Message) -> types.Message:
     """Помощь"""
-    answer = await message.reply(
-        text='Следующуее сообщение я отправлю разработчку'
-    )
-    await bot.forward_message(
-        chat_id=ID_MY, from_chat_id=answer.chat.id,
-        message_id=answer.message_id
-    )
+    await Form.answer.set()
+    await message.reply('Следующуее сообщение я отправлю разработчку')
+
+
+@dp.message_handler(state=Form.answer)
+async def forward_answer(
+    message: types.Message, state: FSMContext
+) -> types.Message:
+    """Ловим сообщение пользователя после help"""
+    await message.forward(ID_MY)
+    await state.finish()
 
 
 @dp.message_handler(content_types=['location'])
