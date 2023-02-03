@@ -36,6 +36,14 @@ async def send_welcome(message: types.Message) -> types.Message:
     )
 
 
+@dp.message_handler(commands=['help'])
+async def send_welcome(message: types.Message) -> types.Message:
+    """Помощь"""
+    await message.reply(
+        text='Следующуее сообщение я отправлю разработчку'
+    )
+
+
 @dp.message_handler(content_types=['location'])
 async def get_location(message: types.Message) -> None:
     """Получаем локацию из сообщения и передаем дальше"""
