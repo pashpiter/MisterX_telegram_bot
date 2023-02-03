@@ -118,26 +118,24 @@ async def location_two(message: types.Message) -> None:
 async def location_three(message: types.Message) -> None:
     """Локация 3"""
     await send_text(message, 'Добро пожаловать в восьмиугольный двор колодец!')
-    cipher_loc_3 = 'Идём по пятам _Мистера Х_, вот что у нас есть:\n*5 4 30 25 10 4\n 15 14 10 25 10\n33 1 15 14 1 22 24 1 23 15 35*\n\nИ вот ещё:'
-    await send_text(message, cipher_loc_3)
+    await send_text(message, 'Идём по пятам _Мистера Х_, вот что у нас есть:\n*5 4 30 25 10 4\n 15 14 10 25 10\n33 1 15 14 1 22 24 1 23 15 35*\n\nИ вот ещё:')
     await send_text(message, '*59.955998, 30.298809*')
     await send_photo(message, 'https://lh3.googleusercontent.com/proxy/raysuDMEM2Tpy7JR90Eqf0IGP5St_mOl3G5AlFQEOlfXNllNx9JuCrMa4TEJPmcdWR7-YRzWnccWSUJrZS-EKZaTMDo')
     key_help = types.InlineKeyboardButton(text='Помощь', callback_data='help_loc_3')
     kb.add(key_help)
     await asyncio.sleep(7)
-    await edit_msg(message.chat.id ,message.message_id + 2, cipher_loc_3, kb)
+    await edit_reply_markup(message.chat.id, message.message_id + 2, kb)
 
 
 async def location_four(message: types.Message) -> None:
     """Локация 4"""
     await send_text(message, 'На углу дома 10 по Большой Пушкарской можно найти памятную табличку с тем, какой уровень воды был в городе в 1924 году')
-    cipher_loc_4 = 'Мы только что перехватили сообщение, может быть это локация 🤔🤔🤔:\n\n*яоцароткивревкс*'
-    await send_text(message, cipher_loc_4)
+    await send_text(message, 'Мы только что перехватили сообщение, может быть это локация 🤔🤔🤔:\n\n*яоцароткивревкс*')
     await send_photo(message, 'https://www.dropbox.com/s/avajjz44qfu0bdk/%D0%BF%D0%B8%D0%BA%D0%B0%D1%87%D1%83.jpg')
     await asyncio.sleep(30)
     key_help = types.InlineKeyboardButton(text='Помощь', callback_data='help_loc_4')
     kb.add(key_help)
-    await edit_msg(message.chat.id, message.message_id + 2, cipher_loc_4, kb)
+    await edit_reply_markup(message.chat.id, message.message_id + 2, kb)
 
 
 async def location_five(message: types.Message) -> None:
@@ -158,8 +156,7 @@ async def location_five(message: types.Message) -> None:
         message, 'https://www.dropbox.com/s/1ltnn9icltrd3xp/%D1%81%D0%BA%D0%B2'
         '%D0%B5%D1%80%20%D0%B2%D0%B8%D0%BA%D1%82%D0%BE%D1%80%D0%B0%20%D1%86%D0'
         '%BE%D1%8F.jpg')
-    cipher_loc_5 = 'Второе ключевое слово: *ПБЩЬДЧ*'
-    await send_text(message, cipher_loc_5)
+    await send_text(message, 'Второе ключевое слово: *ПБЩЬДЧ*')
     await send_text(
         message, 'Это все что есть, попробуй использовать те подсказки, '
         'которые у тебя уже есть, чтобы разгадать'
@@ -176,7 +173,7 @@ async def location_five(message: types.Message) -> None:
     await asyncio.sleep(40)
     key_help = types.InlineKeyboardButton(text='Помощь', callback_data='help_loc_5')
     kb.add(key_help)
-    await edit_msg(message.chat.id, message.message_id + 3, cipher_loc_5, kb)
+    await edit_reply_markup(message.chat.id, message.message_id + 3, kb)
 
 
 async def location_six(message: types.Message) -> None:
@@ -276,7 +273,7 @@ async def location_eight(message: types.Message) -> None:
     await asyncio.sleep(40)
     key_help = types.InlineKeyboardButton(text='Помощь', callback_data='help_loc_8')
     kb.add(key_help)
-    await bot.edit_message_reply_markup(chat_id=message.chat.id, message_id=message.message_id+3, reply_markup=kb)
+    await edit_reply_markup(message.chat.id, message.message_id+3, kb)
 
 
 
@@ -341,8 +338,8 @@ async def send_reply_text(chat_id, text, reply_to_message_id, reply_markup = Non
     await bot.send_message(chat_id, text, reply_to_message_id=reply_to_message_id, reply_markup=reply_markup, parse_mode=parse_mode)
 
 
-async def edit_msg(chat_id, msg_id, text, reply_markup = None, parse_mode = 'markdown'):
-    await bot.edit_message_text(chat_id=chat_id ,message_id=msg_id, text=text, reply_markup=reply_markup, parse_mode=parse_mode)
+async def edit_reply_markup(chat_id, msg_id, reply_markup):
+    await bot.edit_message_reply_markup(chat_id=chat_id, message_id=msg_id, reply_markup=reply_markup)
 
 
 if __name__ == '__main__':
