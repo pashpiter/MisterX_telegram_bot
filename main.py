@@ -75,6 +75,8 @@ async def get_callback(call):
         await final_end(call.message)
     elif call.data in ('st', 'pl', 'sel', 'photo', 'waiter'):
         await task_location_seven(call.message, call.data)
+    elif call.data in ('tamila', 'jhon', 'bill', 'kevin'):
+        await task_location_nine(call.message, call.data)
     
 
 
@@ -228,7 +230,6 @@ async def location_seven(message: types.Message, second: bool=False) -> None:
     await send_text(message, 'Теперь ближе к делу')
     k = {'st': 'Столяр', 'pl': 'Плотник', 'sel': 'Менеджер',
          'photo': 'Фотограф', 'waiter': 'Официант'}
-    # kb = types.InlineKeyboardMarkup()
     buttons = []
     for data, text in k.items():
         buttons.extend([types.InlineKeyboardButton(text=text, callback_data=data)])
@@ -285,15 +286,35 @@ async def location_eight(message: types.Message) -> None:
 
 async def location_nine(message: types.Message) -> None:
     """Локация 9"""
-    text = f'Локация 9 {message.location.latitude}, {message.location.longitude}'
-    await send_text(message, text)
+    await send_text(
+        message, 'Это служебный флигель и скульптурная мастерская постройки '
+        '1886 года, отличающаяся от всех зданий вокруг своей высотой.'
+    )
+    k = {'tamila': 'Тамила', 'jhon': 'Джон', 'bill': 'Билл', 'kevin': 'Кевин'}
+    buttons = []
+    for data, text in k.items():
+        buttons.extend([types.InlineKeyboardButton(text=text, callback_data=data)])
+    kb.add(*buttons)
+    await send_text(
+        message, 'Итак, последняя задачка:\n'
+        'Один из частных детективов, который помогал '
+        'нам в поисках Мистера Х пропал. Мы уверены, что это связано с его '
+        'деятельностью. Мы приехали к нему, чтобы узнать новые детали '
+        'поисков, но нашли только хаос и беспорядок в кабинете детектива, '
+        'как будто что-то искали и не могли найти. На рабочем месте '
+        'нашего знакомого, которое как мы предполагаем посетил Мистер Х, '
+        'мы нашли 4 цифры, но что это могло бы значить, мы не знаем. '
+        'Думаем, что это какая-то подсказка, которая поможет нам узнать '
+        'кто же есть такой этот Мистер Х. И у нас есть четверо '
+        'подозреваемых: Тамила (изящная карманниица, пытаемся её поймать, '
+        'но все время не хватает улик), Джон (умеет вскрывать любые '
+        'замки, давно ничего не было слышно о нем), Билл (недавно приехал'
+        ' к нам в город, раньше был замечен за хорошо продуманными планами) '
+        'и местный Кевин (маленький вор)', kb
+    )
 
 
 async def task_location_seven(message, key):
-    voc = {
-    'pl': 'Плотник', 'sel': 'Менеджер',
-         'photo': 'Фотограф', 'waiter': 'Официант'
-    }
     voc = {
         'st': 'Нет, не верно, попробуй ещё раз',
         'pl': 'Нет, не он, попробуй ещё раз',
@@ -312,6 +333,25 @@ async def task_location_seven(message, key):
             '#4*'
         )
         await message.edit_reply_markup()
+
+
+async def task_location_nine(message, key):
+    voc = {
+        'tamila': 'Нет, это точно не она. Попробуй ещё раз',
+        'jhon': 'Похоже что это не он. Попробуй ещё раз',
+        'kevin': 'Он бы наверно не пошел на такое. Попробуй ещё раз',
+        'bill': 'Да, точно, если перевернуть цифры 7718 то можно увидеть имя '
+                'перступника - Билл.'
+    }
+    await send_text(message, voc[key])
+    if key == 'bill':
+        await send_text(
+            message, 'Теперь он от нас не уйдет! Спасибо за помощь! До новых '
+            'встреч!'
+        )
+        await send_photo(
+            message, 'https://www.dropbox.com/s/cwhxxsa384prcu1/unnamed.jpg'
+        )
 
 
 async def first_message(message: types.Message) -> None:
