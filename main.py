@@ -21,9 +21,6 @@ markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False
 location = types.KeyboardButton("Отправить локацию", request_location=True)
 markup.add(location)
 
-# Inline Keyboard
-kb = types.InlineKeyboardMarkup()
-
 # Убрать Reply Keyboard
 hide_kb = types.ReplyKeyboardRemove()
 
@@ -37,19 +34,20 @@ async def send_welcome(message: types.Message):
 @dp.message_handler(content_types=['location'])
 async def get_location(message: types.Message) -> None:
     """Получаем локацию из сообщения и передаем дальше"""
-    print(message)
     await choose_location(message, message.location.latitude, message.location.longitude)
 
 
 @dp.message_handler(content_types=['text'])
 async def get_text(message: types.Message) -> None:
     """Получаем текст из сообщения и передаем дальше"""
-    text = message.text.lower
+    text = message.text.lower()
     if  text == 'привет':
         await first_message(message)
     elif text == 'наслаждайся каждым моментом':
-        await final_message(message)
-    await message.answer(message.text)
+        await right_code_phrase(message)
+    else: 
+        await send_text(message, 'Не понимаю, что это значит, но я обязательно'
+        ' передам эту информацию куда следует.')
 
 
 @dp.message_handler(content_types=['sticker'])
@@ -131,6 +129,7 @@ async def location_three(message: types.Message) -> None:
     await send_text(message, '*59.955998, 30.298809*')
     await send_photo(message, 'https://lh3.googleusercontent.com/proxy/raysuDMEM2Tpy7JR90Eqf0IGP5St_mOl3G5AlFQEOlfXNllNx9JuCrMa4TEJPmcdWR7-YRzWnccWSUJrZS-EKZaTMDo')
     key_help = types.InlineKeyboardButton(text='Помощь', callback_data='help_loc_3')
+    kb = types.InlineKeyboardMarkup()
     kb.add(key_help)
     await asyncio.sleep(7)
     await edit_reply_markup(message.chat.id, message.message_id + 2, kb)
@@ -143,6 +142,7 @@ async def location_four(message: types.Message) -> None:
     await send_photo(message, 'https://www.dropbox.com/s/avajjz44qfu0bdk/%D0%BF%D0%B8%D0%BA%D0%B0%D1%87%D1%83.jpg')
     await asyncio.sleep(30)
     key_help = types.InlineKeyboardButton(text='Помощь', callback_data='help_loc_4')
+    kb = types.InlineKeyboardMarkup()
     kb.add(key_help)
     await edit_reply_markup(message.chat.id, message.message_id + 2, kb)
 
@@ -181,6 +181,7 @@ async def location_five(message: types.Message) -> None:
     )
     await asyncio.sleep(40)
     key_help = types.InlineKeyboardButton(text='Помощь', callback_data='help_loc_5')
+    kb = types.InlineKeyboardMarkup()
     kb.add(key_help)
     await edit_reply_markup(message.chat.id, message.message_id + 3, kb)
 
@@ -233,6 +234,7 @@ async def location_seven(message: types.Message, second: bool=False) -> None:
     buttons = []
     for data, text in k.items():
         buttons.extend([types.InlineKeyboardButton(text=text, callback_data=data)])
+    kb = types.InlineKeyboardMarkup()
     kb.add(*buttons)
     await send_text(
         message, 'Мы тут в отделе думаем над одной задачей, помоги нам '
@@ -261,7 +263,7 @@ async def location_eight(message: types.Message) -> None:
         'снималось и снимаются фильмы и сериалы. Например "Бандитский '
         'Петербург" или "Улицы разбитых фонарей". Достаточно перейти в '
         'соседний двор и вот уже другая локация в фильме! Также тут снимался '
-        'клип группы ДДТ на песню "Одноразовая жизнь".'
+        'клип группы ДДТ на песню "Одноразовая жизнь".', hide_kb
     )
     await asyncio.sleep(5)
     await send_text(message, 'Продолжим')
@@ -271,7 +273,7 @@ async def location_eight(message: types.Message) -> None:
     )
     await send_text(
         message, 'Где-то в этой новости зашифровано третье ключевое слово, '
-        'постарайся вычислить', hide_kb
+        'постарайся вычислить'
     )
     await asyncio.sleep(10)
     await send_text(
@@ -280,6 +282,7 @@ async def location_eight(message: types.Message) -> None:
     )
     await asyncio.sleep(40)
     key_help = types.InlineKeyboardButton(text='Помощь', callback_data='help_loc_8')
+    kb = types.InlineKeyboardMarkup()
     kb.add(key_help)
     await edit_reply_markup(message.chat.id, message.message_id+3, kb)
 
@@ -294,6 +297,7 @@ async def location_nine(message: types.Message) -> None:
     buttons = []
     for data, text in k.items():
         buttons.extend([types.InlineKeyboardButton(text=text, callback_data=data)])
+    kb = types.InlineKeyboardMarkup()
     kb.add(*buttons)
     await send_text(
         message, 'Итак, последняя задачка:\n'
@@ -340,15 +344,17 @@ async def task_location_nine(message, key):
         'tamila': 'Нет, это точно не она. Попробуй ещё раз',
         'jhon': 'Похоже что это не он. Попробуй ещё раз',
         'kevin': 'Он бы наверно не пошел на такое. Попробуй ещё раз',
-        'bill': 'Да, точно, если перевернуть цифры 7718 то можно увидеть имя '
-                'перступника - Билл.'
+        'bill': 'Да, точно, если перевернуть цифры _7718_ то можно увидеть имя'
+                ' перступника - *Билл*.'
     }
     await send_text(message, voc[key])
     if key == 'bill':
+        await message.edit_reply_markup()
         await send_text(
-            message, 'Теперь он от нас не уйдет! Спасибо за помощь! До новых '
-            'встреч!'
+            message, 'Теперь он от нас не уйдет! Спасибо большое за помощь! '
+            'На этом квест подошел к концу 🥺'
         )
+        await send_text(message, 'До новых встреч!')
         await send_photo(
             message, 'https://www.dropbox.com/s/cwhxxsa384prcu1/unnamed.jpg'
         )
@@ -364,7 +370,7 @@ async def first_message(message: types.Message) -> None:
     await send_text(message, 'Как доберешся - отправь свою локацию с помощью кнопки ниже 👇', markup)
 
 
-async def final_message(message):
+async def right_code_phrase(message):
     await send_text(
         message, 'Это то что и было нужно! Спасибо за участие в миссии по '
         'поимке _Мистера Х_.'
@@ -374,6 +380,7 @@ async def final_message(message):
         ' [ссылке](https://forms.gle/yqGWitPjn5LWiSBM9)'
     )
     await asyncio.sleep(2)
+    kb = types.InlineKeyboardMarkup()
     kb.add(
         types.InlineKeyboardButton('Хочу 🤩', callback_data='hochu'),
         types.InlineKeyboardButton('Не хочу 🧐', callback_data='nehochu')
@@ -386,7 +393,7 @@ async def final_message(message):
 
 async def final_end(message):
     await send_text(
-        message, 'Хорошо! Спасибо что помогла нам поймать _Мистера X_! '
+        message, 'Хорошо! Спасибо за помощь в поимке _Мистера X_! '
         'Хорошего дня!'
     )
     await send_photo(
