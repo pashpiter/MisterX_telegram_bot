@@ -37,7 +37,7 @@ async def send_welcome(message: types.Message) -> types.Message:
 
 
 @dp.message_handler(commands=['help'])
-async def send_welcome(message: types.Message) -> types.Message:
+async def help_command(message: types.Message) -> types.Message:
     """Помощь"""
     await message.reply(
         text='Следующуее сообщение я отправлю разработчку'
