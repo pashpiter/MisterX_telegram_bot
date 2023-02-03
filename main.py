@@ -48,7 +48,7 @@ async def get_text(message: types.Message) -> None:
     if  text == 'привет':
         await first_message(message)
     elif text == 'наслаждайся каждым моментом':
-        pass
+        await final_message(message)
     await message.answer(message.text)
 
 
@@ -60,7 +60,7 @@ async def get_sticker(message: types.Message):
 
 @dp.callback_query_handler(lambda call: True)
 async def get_callback(call):
-    """Обработка callback от Inline Keyboard"""
+    """Обработка callback help от Inline Keyboard"""
     if call.data == 'help_loc_3':
         await help_loc_3(call.message)
     elif call.data == 'help_loc_4':
@@ -69,6 +69,13 @@ async def get_callback(call):
         await help_loc_5(call.message)
     elif call.data == 'help_loc_8':
         await help_loc_8(call.message)
+    elif call.data == 'hochu':
+        await hochu(call.message)
+    elif call.data == 'nehochu':
+        await final_end(call.message)
+    elif call.data in ('st', 'pl', 'sel', 'photo', 'waiter'):
+        await task_location_seven(call.message, call.data)
+    
 
 
 async def choose_location(message: types.Message, lat: float, lon: float) -> None:
@@ -276,11 +283,35 @@ async def location_eight(message: types.Message) -> None:
     await edit_reply_markup(message.chat.id, message.message_id+3, kb)
 
 
-
 async def location_nine(message: types.Message) -> None:
     """Локация 9"""
     text = f'Локация 9 {message.location.latitude}, {message.location.longitude}'
     await send_text(message, text)
+
+
+async def task_location_seven(message, key):
+    voc = {
+    'pl': 'Плотник', 'sel': 'Менеджер',
+         'photo': 'Фотограф', 'waiter': 'Официант'
+    }
+    voc = {
+        'st': 'Нет, не верно, попробуй ещё раз',
+        'pl': 'Нет, не он, попробуй ещё раз',
+        'sel': 'Нет, не верно, попробуй ещё раз',
+        'photo': 'Нет, не он, попробуй ещё раз',
+        'waiter': 'Точно! Это официант. Левше удобнее нести поднос в правой '
+                  'руке, а расставлять еду и напитки левой, так как ведущая '
+                  'рука работает, а другая просто зафиксирована.'
+    }
+    await send_text(message, voc[key])
+    if key == 'waiter':
+        await send_text(
+            message, 'И вот что нам известно:\n*В следующей локации нужно '
+            'будет найти последнее ключевое слово* Следуй в *дом Трех Бенуа*, '
+            'по адресу *Каменноостровский проспект 26-28* и найди там *двор '
+            '#4*'
+        )
+        await message.edit_reply_markup()
 
 
 async def first_message(message: types.Message) -> None:
@@ -291,6 +322,44 @@ async def first_message(message: types.Message) -> None:
     await send_text(message, 'На каждой из локаций есть уникальное место, достоприпечательность, которую ты также можешь найти и изучить.')
     await send_text(message, 'Как прибудешь на каждую из локаций, то отправь свое местоположение. Для этого есть кнопка ниже *Отправить локацию*. Если её нет, то смотри её рядом со стикерами, значок квадрата с четырмя квадратами внутри')
     await send_text(message, 'Как доберешся - отправь свою локацию с помощью кнопки ниже 👇', markup)
+
+
+async def final_message(message):
+    await send_text(
+        message, 'Это то что и было нужно! Спасибо за участие в миссии по '
+        'поимке _Мистера Х_.'
+    )
+    await send_text(
+        message, 'Если несложно, то напиши отзыв о пройденном квесте по данной'
+        ' [ссылке](https://forms.gle/yqGWitPjn5LWiSBM9)'
+    )
+    await asyncio.sleep(2)
+    kb.add(
+        types.InlineKeyboardButton('Хочу 🤩', callback_data='hochu'),
+        types.InlineKeyboardButton('Не хочу 🧐', callback_data='nehochu')
+    )
+    await send_text(
+        message, 'Если хочешь, то можешь ещё помочь нам вычислить преступника '
+        'и решить последнюю задачку, она тут недалеко. Хочешь?', kb
+    )
+
+
+async def final_end(message):
+    await send_text(
+        message, 'Хорошо! Спасибо что помогла нам поймать _Мистера X_! '
+        'Хорошего дня!'
+    )
+    await send_photo(
+        message, 'https://www.dropbox.com/s/cwhxxsa384prcu1/unnamed.jpg'
+    )
+    await message.edit_reply_markup()
+
+
+async def hochu(message):
+    await send_text(
+        message, 'Хорошо! Тогда следуй на Большой проспек П.С. 71 лит Б',
+        markup
+    )
 
 
 async def help_loc_3(message):
