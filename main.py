@@ -24,6 +24,9 @@ markup.add(location)
 # Inline Keyboard
 kb = types.InlineKeyboardMarkup()
 
+# Убрать Reply Keyboard
+hide_kb = types.ReplyKeyboardRemove()
+
 
 @dp.message_handler(commands=['start'])
 async def send_welcome(message: types.Message):
@@ -64,6 +67,8 @@ async def get_callback(call):
         await help_loc_4(call.message)
     elif call.data == 'help_loc_5':
         await help_loc_5(call.message)
+    elif call.data == 'help_loc_8':
+        await help_loc_8(call.message)
 
 
 async def choose_location(message: types.Message, lat: float, lon: float) -> None:
@@ -237,8 +242,42 @@ async def location_seven(message: types.Message, second: bool=False) -> None:
 
 async def location_eight(message: types.Message) -> None:
     """Локация 8"""
-    text = f'Локация 8 {message.location.latitude}, {message.location.longitude}'
-    await send_text(message, text)
+    await send_text(
+        message, 'Дом Бенуа (также назвают Дом трёх Бенуа) — памятник истории '
+        'и культуры регионального значения. Этот доходный дом был построен по '
+        'заказу Первого Российского страхового общества в стиле '
+        'неоклассицизма по проекту Л. Н. Бенуа, Ю. Ю. Бенуа и А. Н. Бенуа '
+        'при участии А. И. Гунста. \nКоличество квартир при постройке дома —'
+        ' 250, количество пронумерованных парадных — 25, количество дворов — '
+        '12.\nВ Доме Бенуа жило множество знаменитостей. Здесь творили '
+        'композиторы Д. Шостакович и Д. Толстой; художники К. Маковский, Л. '
+        'Сергеева, А. Мыльников; писатели М. Чехов, В Дорошевич, А. Прокофьев. '
+        'Благодаря своей уникальной архитектуре с множеством дворов здесь '
+        'снималось и снимаются фильмы и сериалы. Например "Бандитский '
+        'Петербург" или "Улицы разбитых фонарей". Достаточно перейти в '
+        'соседний двор и вот уже другая локация в фильме! Также тут снимался '
+        'клип группы ДДТ на песню "Одноразовая жизнь".'
+    )
+    await asyncio.sleep(5)
+    await send_text(message, 'Продолжим')
+    await send_photo(
+        message, 'https://www.dropbox.com/s/9zeuqf163j43l7y/%D0%A0%D0%98%D0%'
+        '90%20%D0%BD%D0%BE%D0%B2%D0%BE%D1%81%D1%82%D0%B8.jpg'
+    )
+    await send_text(
+        message, 'Где-то в этой новости зашифровано третье ключевое слово, '
+        'постарайся вычислить', hide_kb
+    )
+    await asyncio.sleep(10)
+    await send_text(
+        message, 'Пришли нам пожалуйста кодовую фразу из трех слов, которая у '
+        'тебя получилась'
+    )
+    await asyncio.sleep(40)
+    key_help = types.InlineKeyboardButton(text='Помощь', callback_data='help_loc_8')
+    kb.add(key_help)
+    await bot.edit_message_reply_markup(chat_id=message.chat.id, message_id=message.message_id+3, reply_markup=kb)
+
 
 
 async def location_nine(message: types.Message) -> None:
@@ -280,8 +319,12 @@ async def help_loc_5(message):
     await message.edit_reply_markup()
 
 
-async def help_loc_8(call):
-    pass
+async def help_loc_8(message):
+    await send_reply_text(
+        message.chat.id, 'Попробуй использовать первые буквы каждой строки '
+        'чтобы составить последнее ключевое слово', message.message_id
+    )
+    await message.edit_reply_markup()
 
 
 async def send_text(message: types.Message, text: str, reply_markup: types.ReplyKeyboardMarkup=None, parse_mode: types.ParseMode='markdown') -> types.Message:
