@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 API_TOKEN = os.getenv('TELEGRAM_TOKEN')
-ID_MY = os.getenv('MY_ID')
+ID_MY = int(os.getenv('MY_ID'))
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, filename='bot_log.log', filemode='w')
@@ -49,7 +49,15 @@ async def send_welcome(message: types.Message) -> types.Message:
 async def help_command(message: types.Message) -> types.Message:
     """Помощь"""
     await Form.answer.set()
-    await message.reply('Следующуее сообщение я отправлю разработчку')
+    key_help = types.InlineKeyboardButton(
+        text='Отмена', callback_data='cancel'
+    )
+    kb = types.InlineKeyboardMarkup()
+    kb.add(key_help)
+    await send_reply_text(
+        message.chat.id, 'Следующуее сообщение я отправлю разработчку',
+        message.message_id, kb
+    )
 
 
 @dp.message_handler(state=Form.answer)
@@ -58,6 +66,7 @@ async def forward_answer(
 ) -> types.Message:
     """Ловим сообщение пользователя после help"""
     await message.forward(ID_MY)
+    await bot.edit_message_reply_markup(message.chat.id, message.message_id-1)
     await state.finish()
 
 
@@ -69,9 +78,19 @@ async def get_location(message: types.Message) -> None:
     )
 
 
+@dp.message_handler(
+    lambda message: message.chat.id == ID_MY and message.reply_to_message,
+    content_types=['text']
+)
+async def send_msg_from_me_to_user(message: types.Message) -> None:
+    """Ответ от разработчика на пересылаемое сообщение от пользователя"""
+    await bot.send_message(message.reply_to_message.chat.id, message.text)
+
+
 @dp.message_handler(content_types=['text'])
 async def get_text(message: types.Message) -> None:
     """Получаем текст из сообщения и передаем дальше"""
+    print(message)
     text = message.text.lower()
     if text == 'привет':
         await first_message(message)
@@ -79,7 +98,10 @@ async def get_text(message: types.Message) -> None:
         await right_code_phrase(message)
     else:
         await send_text(message, 'Не понимаю, что это значит, но я обязательно'
-                                 ' передам эту информацию куда следует.')
+                                 ' передам эту информацию куда следует. Можешь'
+                                 ' воспользоваться /help для связи с '
+                                 'разработчиком'
+                        )
 
 
 @dp.message_handler(content_types=['sticker'])
@@ -88,8 +110,18 @@ async def get_sticker(message: types.Message):
     await message.answer_sticker(message.sticker.file_id)
 
 
+@dp.callback_query_handler(
+    lambda call: call.data == 'cancel', state=Form.answer
+)
+async def cancel_callback(
+    call: types.CallbackQuery, state: FSMContext
+) -> None:
+    await state.finish()
+    await call.message.delete()
+
+
 @dp.callback_query_handler(lambda call: True)
-async def get_callback(call: types.CallbackQuery):
+async def get_callback(call: types.CallbackQuery) -> None:
     """Обработка callback от Inline Keyboard"""
     if call.data == 'help_loc_3':
         await help_loc_3(call.message)
@@ -606,7 +638,7 @@ async def send_reply_text(
 async def edit_reply_markup(
     chat_id: int, msg_id: int, reply_markup: types.ReplyKeyboardMarkup
 ) -> types.Message:
-    """Убираем Inline keyboard"""
+    """Добавляем Inline keyboard"""
     await bot.edit_message_reply_markup(
         chat_id=chat_id, message_id=msg_id, reply_markup=reply_markup
     )
