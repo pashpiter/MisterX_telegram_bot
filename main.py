@@ -86,7 +86,7 @@ async def choose_location(message: types.Message, lat: float, lon: float) -> Non
     elif 59.9569 <= lat <= 59.9576 and 30.315 <= lon <= 30.317:
         await location_seven(message)
     elif 59.9564 <= lat <= 59.9568 and 30.3203 <= lon <= 30.3217:
-        await location_seven_dif(message)
+        await location_seven(message, second=True)
     elif 59.9614 <= lat <= 59.9624 and 30.3123 <= lon <= 30.3135:
         await location_eight(message)
     elif 59.9642 <= lat <= 59.9647 and 30.3108 <= lon <= 30.3118:
@@ -119,7 +119,7 @@ async def location_three(message: types.Message) -> None:
     await send_photo(message, 'https://lh3.googleusercontent.com/proxy/raysuDMEM2Tpy7JR90Eqf0IGP5St_mOl3G5AlFQEOlfXNllNx9JuCrMa4TEJPmcdWR7-YRzWnccWSUJrZS-EKZaTMDo')
     key_help = types.InlineKeyboardButton(text='Помощь', callback_data='help_loc_3')
     kb.add(key_help)
-    time.sleep(7)
+    await asyncio.sleep(7)
     await edit_msg(message.chat.id ,message.message_id + 2, cipher_loc_3, kb)
 
 
@@ -129,7 +129,7 @@ async def location_four(message: types.Message) -> None:
     cipher_loc_4 = 'Мы только что перехватили сообщение, может быть это локация 🤔🤔🤔:\n\n*яоцароткивревкс*'
     await send_text(message, cipher_loc_4)
     await send_photo(message, 'https://www.dropbox.com/s/avajjz44qfu0bdk/%D0%BF%D0%B8%D0%BA%D0%B0%D1%87%D1%83.jpg')
-    time.sleep(30)
+    await asyncio.sleep(30)
     key_help = types.InlineKeyboardButton(text='Помощь', callback_data='help_loc_4')
     kb.add(key_help)
     await edit_msg(message.chat.id, message.message_id + 2, cipher_loc_4, kb)
@@ -159,7 +159,7 @@ async def location_five(message: types.Message) -> None:
         message, 'Это все что есть, попробуй использовать те подсказки, '
         'которые у тебя уже есть, чтобы разгадать'
     )
-    time.sleep(10)
+    await asyncio.sleep(10)
     await send_text(
         message, 'Следующая локация Мистера Х находится *на входе в '
         'Экзотариум*'
@@ -168,7 +168,7 @@ async def location_five(message: types.Message) -> None:
         message, 'https://upload.wikimedia.org/wikipedia/commons/4/4d/Zoo_SPB_'
         'entrance.jpg'
     )
-    time.sleep(40)
+    await asyncio.sleep(40)
     key_help = types.InlineKeyboardButton(text='Помощь', callback_data='help_loc_5')
     kb.add(key_help)
     await edit_msg(message.chat.id, message.message_id + 3, cipher_loc_5, kb)
@@ -201,20 +201,38 @@ async def location_six(message: types.Message) -> None:
     )
 
 
-async def location_seven(message: types.Message) -> None:
+async def location_seven(message: types.Message, second: bool=False) -> None:
     """Локация 7"""
-    await send_text(
-        message, 'Правильно! Это и есть та точка! Это постройка 1953 г. о чем '
-        'свидетельствует дата на фронтоне.'
-    )
-    await asyncio.sleep(20)
+    if not second:
+        await send_text(
+            message, 'Правильно! Это и есть та точка! Это постройка 1953 г. о чем '
+            'свидетельствует дата на фронтоне.'
+        )
+    elif second:
+        await send_text(
+            message, 'Правильно! Это и есть та точка! Это постройка 1879 г., в'
+            ' этом доме, в разыне периоды жили: архитектор Г. В. Войневич, а '
+            'также композитор, музыкант, автор слов и музыки многих песен О.Д.'
+            ' Строк'
+        )
+    await asyncio.sleep(5)
     await send_text(message, 'Теперь ближе к делу')
-
-
-async def location_seven_dif(message: types.Message) -> None:
-    """Локация 7_2"""
-    text = f'Локация 7_2 {message.location.latitude}, {message.location.longitude}'
-    await send_text(message, text)
+    k = {'st': 'Столяр', 'pl': 'Плотник', 'sel': 'Менеджер',
+         'photo': 'Фотограф', 'waiter': 'Официант'}
+    # kb = types.InlineKeyboardMarkup()
+    buttons = []
+    for data, text in k.items():
+        buttons.extend([types.InlineKeyboardButton(text=text, callback_data=data)])
+    kb.add(*buttons)
+    await send_text(
+        message, 'Мы тут в отделе думаем над одной задачей, помоги нам '
+        'пожалуйста и мы поделимся новыми данными.\n*Помоги нам вычислить '
+        'левшу.*'
+    )
+    await send_photo(
+        message, 'https://www.dropbox.com/s/73ch4ccixxzqh3p/5140025df1b0bbb36e'
+        'e37aa933.jpg', kb
+    )
 
 
 async def location_eight(message: types.Message) -> None:
@@ -271,9 +289,9 @@ async def send_text(message: types.Message, text: str, reply_markup: types.Reply
     await message.answer(text=text, reply_markup=reply_markup, parse_mode=parse_mode)
 
 
-async def send_photo(message: types.Message, img: types.InputMediaPhoto) -> types.Message:
+async def send_photo(message: types.Message, img: types.InputMediaPhoto, reply_markup=None) -> types.Message:
     """Отправляем фото"""
-    await message.answer_photo(photo=img)
+    await message.answer_photo(photo=img, reply_markup=reply_markup)
 
 
 async def send_reply_text(chat_id, text, reply_to_message_id, reply_markup = None, parse_mode = 'markdown'):
