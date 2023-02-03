@@ -2,7 +2,7 @@ import logging
 import time
 import os
 from dotenv import load_dotenv
-from aiogram import Bot, Dispatcher, executor, types
+from aiogram import Bot, Dispatcher, executor, types, asyncio
 
 load_dotenv()
 
@@ -176,14 +176,39 @@ async def location_five(message: types.Message) -> None:
 
 async def location_six(message: types.Message) -> None:
     """Локация 6"""
-    text = f'Локация 6 {message.location.latitude}, {message.location.longitude}'
-    await send_text(message, text)
+    await send_text(
+        message, 'Это одни из входов в Ленинградский зоопарк. История зверинца'
+        ' начинается в 1865 году, когда любители животных Софья и Юлиус '
+        'Гебгардт открыли его в историческом центре города. Затем он сменил '
+        'множество частных владельцев и в 1918 году зоосад был '
+        'национализирован. Во время Великой Отечественной войны сотрудники '
+        'зоосада в тяжелейших условиях не прекращали работу и сохраняли '
+        'животных.\nЭто один из серевных зоопарков мира, где содеражтся около '
+        '600 видов млекопитающих, птиц, рыб и беспозвоночных из разных уголков'
+        ' Земли.'
+    )
+    await send_text(
+        message, 'Итак, вернемся к поиску. У тебя уже есть шифр с квадратами, '
+        'расставь на нем фигуры так, чтобы в каждом столбце, строке и в каждом'
+        ' квадрате с двойной границей были разные фигуры, как в *судоку*, '
+        'только с фигурами. Острие треугольников должны смотреть вверх. Затем '
+        'сопоставь судоку с картинкой и треугольники подскажут тебе следующее '
+        'место, куда тебе нужно добраться.'
+    )
+    await send_photo(
+        message, 'https://www.dropbox.com/s/nnhduqih57oq5x4/%D0%91%D0%B5%D0%B7'
+        '%D1%8B%D0%BC%D1%8F%D0%BD%D0%BD%D1%8B%D0%B9%201.jpg'
+    )
 
 
 async def location_seven(message: types.Message) -> None:
     """Локация 7"""
-    text = f'Локация 7 {message.location.latitude}, {message.location.longitude}'
-    await send_text(message, text)
+    await send_text(
+        message, 'Правильно! Это и есть та точка! Это постройка 1953 г. о чем '
+        'свидетельствует дата на фронтоне.'
+    )
+    await asyncio.sleep(20)
+    await send_text(message, 'Теперь ближе к делу')
 
 
 async def location_seven_dif(message: types.Message) -> None:
