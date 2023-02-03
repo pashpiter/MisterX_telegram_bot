@@ -10,7 +10,7 @@ API_TOKEN = os.getenv('TELEGRAM_TOKEN')
 ID_MY = os.getenv('MY_ID')
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, filename='bot_log.log', filemode='w')
 
 # Initialize bot and dispatcher
 bot = Bot(token=API_TOKEN)
@@ -39,8 +39,12 @@ async def send_welcome(message: types.Message) -> types.Message:
 @dp.message_handler(commands=['help'])
 async def help_command(message: types.Message) -> types.Message:
     """Помощь"""
-    await message.reply(
+    answer = await message.reply(
         text='Следующуее сообщение я отправлю разработчку'
+    )
+    await bot.forward_message(
+        chat_id=ID_MY, from_chat_id=answer.chat.id,
+        message_id=answer.message_id
     )
 
 
