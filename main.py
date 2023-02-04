@@ -13,7 +13,8 @@ API_TOKEN = os.getenv('TELEGRAM_TOKEN')
 ID_MY = int(os.getenv('MY_ID'))
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, filename='bot_log.log', filemode='w')
+logging.basicConfig(level=logging.INFO, filename='bot_log.log', filemode='w',
+                    format="%(asctime)s %(levelname)s %(message)s")
 
 # Initialize bot and dispatcher
 bot = Bot(token=API_TOKEN)
@@ -90,8 +91,9 @@ async def send_msg_from_me_to_user(message: types.Message) -> None:
 @dp.message_handler(content_types=['text'])
 async def get_text(message: types.Message) -> None:
     """Получаем текст из сообщения и передаем дальше"""
-    print(message)
     text = message.text.lower()
+    logging.info(f'Пользователь {message.chat.id}, {message.chat.username} '
+                 f'прислал текст {message.text}')
     if text == 'привет':
         await first_message(message)
     elif text == 'наслаждайся каждым моментом':
@@ -169,11 +171,15 @@ async def choose_location(
     elif 59.9642 <= lat <= 59.9647 and 30.3108 <= lon <= 30.3118:
         await location_nine(message)
     else:
+        logging.info(f'Пользователь {message.chat.id}, {message.chat.username}'
+                     f' lat = {lat}, long = {lon}')
         await send_text(message, text='Не похоже что ты на месте')
 
 
 async def location_one(message: types.Message) -> None:
     """Локация 1"""
+    logging.info(f'Пользователь {message.chat.id}, {message.chat.username} '
+                 'на локации 1')
     await send_text(
         message, 'Приветствую на первой локации! Это двор Нельсона, '
         'неформальная достопримечательность Петроградской стороны'
@@ -196,6 +202,8 @@ async def location_one(message: types.Message) -> None:
 
 async def location_two(message: types.Message) -> None:
     """Локация 2"""
+    logging.info(f'Пользователь {message.chat.id}, {message.chat.username} '
+                 'на локации 2')
     await send_text(
         message, 'Здесь можно найти замечательное граффити "Покорение неба и '
         'космоса"'
@@ -217,6 +225,8 @@ async def location_two(message: types.Message) -> None:
 
 async def location_three(message: types.Message) -> None:
     """Локация 3"""
+    logging.info(f'Пользователь {message.chat.id}, {message.chat.username} '
+                 'на локации 3')
     await send_text(message, 'Добро пожаловать в восьмиугольный двор колодец!')
     await send_text(
         message, 'Идём по пятам _Мистера Х_, вот что у нас есть:\n*5 4 30 25 '
@@ -239,6 +249,8 @@ async def location_three(message: types.Message) -> None:
 
 async def location_four(message: types.Message) -> None:
     """Локация 4"""
+    logging.info(f'Пользователь {message.chat.id}, {message.chat.username} '
+                 'на локации 4')
     await send_text(
         message, 'На углу дома 10 по Большой Пушкарской можно найти памятную '
         'табличку с тем, какой уровень воды был в городе в 1924 году'
@@ -262,6 +274,8 @@ async def location_four(message: types.Message) -> None:
 
 async def location_five(message: types.Message) -> None:
     """Локация 5"""
+    logging.info(f'Пользователь {message.chat.id}, {message.chat.username} '
+                 'на локации 5')
     await send_text(
         message, 'Ты на месте! Это сквер Виктора Цоя. \n _Название скверу '
         'было присвоено 20 сентября 2012 года. Сквер был выбран в связи с тем,'
@@ -303,6 +317,8 @@ async def location_five(message: types.Message) -> None:
 
 async def location_six(message: types.Message) -> None:
     """Локация 6"""
+    logging.info(f'Пользователь {message.chat.id}, {message.chat.username} '
+                 'на локации 6')
     await send_text(
         message, 'Это одни из входов в Ленинградский зоопарк. История зверинца'
         ' начинается в 1865 году, когда любители животных Софья и Юлиус '
@@ -330,6 +346,8 @@ async def location_six(message: types.Message) -> None:
 
 async def location_seven(message: types.Message, second: bool = False) -> None:
     """Локация 7"""
+    logging.info(f'Пользователь {message.chat.id}, {message.chat.username} '
+                 'на локации 7')
     if not second:
         await send_text(
             message, 'Правильно! Это и есть та точка! Это постройка 1953 г. о '
@@ -366,6 +384,8 @@ async def location_seven(message: types.Message, second: bool = False) -> None:
 
 async def location_eight(message: types.Message) -> None:
     """Локация 8"""
+    logging.info(f'Пользователь {message.chat.id}, {message.chat.username} '
+                 'на локации 8')
     await send_text(
         message, 'Дом Бенуа (также назвают Дом трёх Бенуа) — памятник истории '
         'и культуры регионального значения. Этот доходный дом был построен по '
@@ -408,6 +428,8 @@ async def location_eight(message: types.Message) -> None:
 
 async def location_nine(message: types.Message) -> None:
     """Локация 9"""
+    logging.info(f'Пользователь {message.chat.id}, {message.chat.username} '
+                 'на локации 9')
     await send_text(
         message, 'Это служебный флигель и скульптурная мастерская постройки '
         '1886 года, отличающаяся от всех зданий вокруг своей высотой.'
@@ -472,6 +494,8 @@ async def task_location_nine(message: types.Message, key: str) -> None:
     }
     await send_text(message, voc[key])
     if key == 'bill':
+        logging.info(f'Пользователь {message.chat.id}, {message.chat.username}'
+                     ' закончил квест после локации 9')
         await message.edit_reply_markup()
         await send_text(
             message, 'Теперь он от нас не уйдет! Спасибо большое за помощь! '
@@ -522,6 +546,8 @@ async def first_message(message: types.Message) -> None:
 
 async def right_code_phrase(message: types.Message) -> None:
     """Получена правильная итоговая кодовая фраза"""
+    logging.info(f'От пользователя {message.chat.id}, {message.chat.username} '
+                 'получено верная кодовая фраза')
     await send_text(
         message, 'Это то что и было нужно! Спасибо за участие в миссии по '
         'поимке _Мистера Х_.'
@@ -544,6 +570,8 @@ async def right_code_phrase(message: types.Message) -> None:
 
 async def nehochu_final(message: types.Message) -> None:
     """Последнее сообщение после 8-й локации, в случае отрицательного ответа"""
+    logging.info(f'Пользователь {message.chat.id}, {message.chat.username} '
+                 'закончил квест после локации 8')
     await send_text(
         message, 'Хорошо! Спасибо за помощь в поимке _Мистера X_! '
         'Хорошего дня!'
