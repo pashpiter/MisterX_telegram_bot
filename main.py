@@ -85,7 +85,10 @@ async def get_location(message: types.Message) -> None:
 )
 async def send_msg_from_me_to_user(message: types.Message) -> None:
     """Ответ от разработчика на пересылаемое сообщение от пользователя"""
-    await bot.send_message(message.reply_to_message.chat.id, message.text)
+    await bot.send_message(
+        message.reply_to_message.chat.id, message.text,
+        reply_to_message_id=message.reply_to_message.message_id
+    )
 
 
 @dp.message_handler(content_types=['text'])
@@ -107,7 +110,7 @@ async def get_text(message: types.Message) -> None:
 
 
 @dp.message_handler(content_types=['sticker'])
-async def get_sticker(message: types.Message):
+async def get_sticker(message: types.Message) -> types.Message:
     """Пересылает обратно полученный стикер"""
     await message.answer_sticker(message.sticker.file_id)
 
@@ -118,6 +121,7 @@ async def get_sticker(message: types.Message):
 async def cancel_callback(
     call: types.CallbackQuery, state: FSMContext
 ) -> None:
+    """Отменяет написание сообщения разработчику"""
     await state.finish()
     await call.message.delete()
 
