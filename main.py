@@ -51,6 +51,18 @@ async def send_welcome(message: types.Message) -> types.Message:
     )
 
 
+@dp.message_handler(lambda message: message.chat.id == ID_MY, commands=['log'])
+async def log_command(message: types.Message) -> types.Message:
+    """Просмотр логов, доступно только для разработчика"""
+    f = open('bot_log.log', encoding='UTF-8')
+    text = [line for line in f]
+    if len(text) > 30:
+        await message.reply(''.join(text[-30:]))
+    else:
+        await message.reply(''.join(text))
+    f.close()
+
+
 @dp.message_handler(commands=['help'])
 async def help_command(message: types.Message) -> types.Message:
     """Помощь"""
@@ -61,8 +73,8 @@ async def help_command(message: types.Message) -> types.Message:
     kb = types.InlineKeyboardMarkup()
     kb.add(key_help)
     await send_reply_text(
-        message.chat.id, 'Следующуее сообщение я отправлю разработчку',
-        message.message_id, kb
+        message.chat.id, 'Следующуее текстовое сообщение я отправлю '
+        'разработчку', message.message_id, kb
     )
 
 
