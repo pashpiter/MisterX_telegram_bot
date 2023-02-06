@@ -57,10 +57,19 @@ async def log_command(message: types.Message) -> types.Message:
     f = open('bot_log.log', encoding='UTF-8')
     log = [line for line in f]
     f.close()
-    if len(log) > 30:
-        await message.reply(''.join(log[-30:]))
-    else:
-        await message.reply(''.join(log))
+    k = {
+        'Log_5': 5, 'log_10': 10, 'log_15': 15,
+        'log_20': 20, 'log_25': 25
+    }
+    kb = types.InlineKeyboardMarkup()
+    buttons = []
+    for keys, values in k.items():
+        buttons.extend([types.InlineKeyboardButton(
+            text=values, callback_data=keys
+        )])
+    kb.add(*buttons)
+    await message.reply(f'Количество логов: {len(log)}', reply_markup=kb)
+
 
 
 @dp.message_handler(commands=['help'])
@@ -162,6 +171,8 @@ async def get_callback(call: types.CallbackQuery) -> None:
         await task_location_seven(call.message, call.data)
     elif call.data in ('tamila', 'jhon', 'bill', 'kevin'):
         await task_location_nine(call.message, call.data)
+    elif call.data in ('log_5', 'log_10', 'log_15', 'log_20', 'log_25'):
+        await log_answer(call.message, call.data)
 
 
 async def choose_location(
@@ -662,6 +673,18 @@ async def help_loc_8(message: types.Message) -> None:
         'чтобы составить последнее ключевое слово', message.message_id
     )
     await message.edit_reply_markup()
+
+
+async def log_answer(message: types.Message, key: str) -> None:
+    k = {
+        'Log_5': 5, 'log_10': 10, 'log_15': 15,
+        'log_20': 20, 'log_25': 25
+    }
+    f = open('bot_log.log')
+    text = [line for line in f]
+    f.close()
+    await message.reply(''.join(text[-k[key]:]))
+    await types.ReplyKeyboardRemove()
 
 
 async def send_text(
