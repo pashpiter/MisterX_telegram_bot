@@ -16,6 +16,7 @@ ID_MY = int(os.getenv('MY_ID'))
 # Configure logging
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s %(levelname)s %(message)s",
+                    datefmt='%Y-%m-%d %H:%M:%S',
                     handlers=[
                         logging.FileHandler(
                             filename='bot_log.log', mode='w', encoding='UTF-8')
@@ -58,8 +59,8 @@ async def log_command(message: types.Message) -> types.Message:
     log = [line for line in f]
     f.close()
     k = {
-        'Log_5': 5, 'log_10': 10, 'log_15': 15,
-        'log_20': 20, 'log_25': 25
+        'log_5': 5, 'log_10': 10, 'log_15': 15,
+        'log_20': 20, 'log_25': 25, 'log_30': 30
     }
     kb = types.InlineKeyboardMarkup()
     buttons = []
@@ -71,10 +72,11 @@ async def log_command(message: types.Message) -> types.Message:
     await message.reply(f'Количество логов: {len(log)}', reply_markup=kb)
 
 
-
 @dp.message_handler(commands=['help'])
 async def help_command(message: types.Message) -> types.Message:
     """Помощь"""
+    logging.info(f'User {message.chat.id}, {message.chat.username} '
+                 'asking for help')
     await Form.answer.set()
     key_help = types.InlineKeyboardButton(
         text='Отмена', callback_data='cancel'
@@ -92,6 +94,9 @@ async def forward_answer(
     message: types.Message, state: FSMContext
 ) -> types.Message:
     """Ловим сообщение пользователя после help"""
+    logging.info(f'Get request "{message.text}" for help from user '
+                 f'{message.chat.id}, {message.chat.username} and send '
+                 'forward')
     await message.forward(ID_MY)
     await bot.edit_message_reply_markup(message.chat.id, message.message_id-1)
     await state.finish()
@@ -111,6 +116,9 @@ async def get_location(message: types.Message) -> None:
 )
 async def send_msg_from_me_to_user(message: types.Message) -> None:
     """Ответ от разработчика на пересылаемое сообщение от пользователя"""
+    logging.info(f'Reply message "{message.text}" for user '
+                 f'{message.reply_to_message.chat.id}, '
+                 f'{message.reply_to_message.chat.username}')
     await bot.send_message(
         message.reply_to_message.chat.id, message.text,
         reply_to_message_id=message.reply_to_message.message_id
@@ -148,6 +156,8 @@ async def cancel_callback(
     call: types.CallbackQuery, state: FSMContext
 ) -> None:
     """Отменяет написание сообщения разработчику"""
+    logging.info(f'User {call.message.chat.id}, {call.message.chat.username} '
+                 'cancel request for help')
     await state.finish()
     await call.message.delete()
 
@@ -171,7 +181,9 @@ async def get_callback(call: types.CallbackQuery) -> None:
         await task_location_seven(call.message, call.data)
     elif call.data in ('tamila', 'jhon', 'bill', 'kevin'):
         await task_location_nine(call.message, call.data)
-    elif call.data in ('log_5', 'log_10', 'log_15', 'log_20', 'log_25'):
+    elif call.data in (
+        'log_5', 'log_10', 'log_15', 'log_20', 'log_25', 'log_30'
+    ):
         await log_answer(call.message, call.data)
 
 
@@ -677,14 +689,14 @@ async def help_loc_8(message: types.Message) -> None:
 
 async def log_answer(message: types.Message, key: str) -> None:
     k = {
-        'Log_5': 5, 'log_10': 10, 'log_15': 15,
-        'log_20': 20, 'log_25': 25
+        'log_5': 5, 'log_10': 10, 'log_15': 15,
+        'log_20': 20, 'log_25': 25, 'log_30': 30
     }
-    f = open('bot_log.log')
+    f = open('bot_log.log', encoding='UTF-8')
     text = [line for line in f]
     f.close()
     await message.reply(''.join(text[-k[key]:]))
-    await types.ReplyKeyboardRemove()
+    await message.edit_reply_markup()
 
 
 async def send_text(
