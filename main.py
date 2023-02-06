@@ -27,7 +27,7 @@ dp = Dispatcher(bot, storage=MemoryStorage())
 
 
 class Form(StatesGroup):
-    """Класс для сообщения, которое нужно переслать разработчику"""
+    """Класс для отлавливания сообщений"""
     answer = State()
 
 
@@ -55,12 +55,12 @@ async def send_welcome(message: types.Message) -> types.Message:
 async def log_command(message: types.Message) -> types.Message:
     """Просмотр логов, доступно только для разработчика"""
     f = open('bot_log.log', encoding='UTF-8')
-    text = [line for line in f]
-    if len(text) > 30:
-        await message.reply(''.join(text[-30:]))
-    else:
-        await message.reply(''.join(text))
+    log = [line for line in f]
     f.close()
+    if len(log) > 30:
+        await message.reply(''.join(log[-30:]))
+    else:
+        await message.reply(''.join(log))
 
 
 @dp.message_handler(commands=['help'])
