@@ -116,12 +116,13 @@ async def get_location(message: types.Message) -> None:
 )
 async def send_msg_from_me_to_user(message: types.Message) -> None:
     """Ответ от разработчика на пересылаемое сообщение от пользователя"""
-    logging.info(f'Reply message "{message.text}" for user '
-                 f'{message.reply_to_message.chat.id}, '
-                 f'{message.reply_to_message.chat.username}')
+    logging.info(f'Reply message "{message.text}" for message '
+                 f'"{message.reply_to_message.text}" user '
+                 f'{message.reply_to_message.forward_from.id}, '
+                 f'{message.reply_to_message.forward_from.username}')
     await bot.send_message(
-        message.reply_to_message.chat.id, message.text,
-        reply_to_message_id=message.reply_to_message.message_id
+        message.reply_to_message.forward_from.id, message.text,
+        reply_to_message_id=message.reply_to_message.message_id-1
     )
 
 
@@ -146,6 +147,8 @@ async def get_text(message: types.Message) -> None:
 @dp.message_handler(content_types=['sticker'])
 async def get_sticker(message: types.Message) -> types.Message:
     """Пересылает обратно полученный стикер"""
+    logging.info(f'Get stiker "{message.sticker.emoji}" from '
+                 f'"{message.sticker.set_name}" set')
     await message.answer_sticker(message.sticker.file_id)
 
 
@@ -226,7 +229,11 @@ async def location_one(message: types.Message) -> None:
                  'location 1')
     await send_text(
         message, 'Приветствую на первой локации! Это двор Нельсона, '
-        'неформальная достопримечательность Петроградской стороны'
+        'неформальная достопримечательность Петроградской стороны.\n'
+        'Здесь можно найти удивительные улично-дворовые арт-объекты и '
+        'красочные произведения искусства, а все это - творения рук здешнего'
+        ' барда Нельсона. Можно пройтись, обратить внимание на стены, '
+        'заглянуть в арки, и возможно даже встретить создателя.'
     )
     await send_text(
         message, 'И вернемся к делу. Несколько дней назад нам удалось '
@@ -274,7 +281,7 @@ async def location_three(message: types.Message) -> None:
     await send_text(message, 'Добро пожаловать в восьмиугольный двор колодец!')
     await send_text(
         message, 'Идём по пятам _Мистера Х_, вот что у нас есть:\n*5 4 30 25 '
-        '10 4\n 15 14 10 25 10\n33 1 15 14 1 22 24 1 23 15 35*\n\nИ вот ещё:'
+        '10 4\n15 14 10 25 10\n33 1 15 14 1 22 24 1 23 15 35*\n\nИ вот ещё:'
     )
     await send_text(message, '*59.955998, 30.298809*')
     await send_photo(
@@ -370,7 +377,7 @@ async def location_six(message: types.Message) -> None:
         'множество частных владельцев и в 1918 году зоосад был '
         'национализирован. Во время Великой Отечественной войны сотрудники '
         'зоосада в тяжелейших условиях не прекращали работу и сохраняли '
-        'животных.\nЭто один из серевных зоопарков мира, где содеражтся около '
+        'животных.\nЭто один из северных зоопарков мира, где содеражтся около '
         '600 видов млекопитающих, птиц, рыб и беспозвоночных из разных уголков'
         ' Земли.'
     )
@@ -380,7 +387,7 @@ async def location_six(message: types.Message) -> None:
         ' квадрате с двойной границей были разные фигуры, как в *судоку*, '
         'только с фигурами. Острие треугольников должны смотреть вверх. Затем '
         'сопоставь судоку с картинкой и треугольники подскажут тебе следующее '
-        'место, куда тебе нужно добраться.'
+        'место, на Петроградской стороне, куда тебе нужно добраться.'
     )
     await send_photo(
         message, 'https://www.dropbox.com/s/nnhduqih57oq5x4/%D0%91%D0%B5%D0%B7'
@@ -484,7 +491,7 @@ async def location_nine(message: types.Message) -> None:
         buttons.extend([types.InlineKeyboardButton(
             text=text, callback_data=data
         )])
-    kb = types.InlineKeyboardMarkup()
+    kb = types.InlineKeyboardMarkup(row_width=2)
     kb.add(*buttons)
     await send_text(
         message, 'Итак, последняя задачка:\n'
@@ -501,7 +508,11 @@ async def location_nine(message: types.Message) -> None:
         'но все время не хватает улик), Джон (умеет вскрывать любые '
         'замки, давно ничего не было слышно о нем), Билл (недавно приехал'
         ' к нам в город, раньше был замечен за хорошо продуманными планами) '
-        'и местный Кевин (маленький вор)', kb
+        'и местный Кевин (маленький вор)'
+    )
+    await send_photo(
+        message, 'https://www.dropbox.com/s/0rfay2izcc3uaei/d2aebd560cbed117db'
+        'a06686b8.jpg', kb
     )
 
 
@@ -643,6 +654,7 @@ async def hochu(message: types.Message) -> None:
         message, 'Хорошо! Тогда следуй на Большой проспек П.С. 71 лит Б',
         markup
     )
+    await message.edit_reply_markup()
 
 
 async def help_loc_3(message: types.Message) -> None:
