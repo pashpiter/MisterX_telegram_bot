@@ -19,7 +19,9 @@ async def send_photo(
     reply_markup: types.ReplyKeyboardMarkup = None
 ) -> types.Message:
     """Отправляем фото"""
-    await message.answer_photo(photo=img, reply_markup=reply_markup)
+    await message.answer_photo(
+        photo=img, reply_markup=reply_markup, protect_content=True
+    )
 
 
 async def send_reply_text(

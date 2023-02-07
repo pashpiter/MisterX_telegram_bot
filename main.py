@@ -125,7 +125,7 @@ async def get_sticker(message: types.Message) -> types.Message:
     """Пересылает обратно полученный стикер"""
     logging.info(f'Get stiker "{message.sticker.emoji}" from '
                  f'"{message.sticker.set_name}" set')
-    await message.answer_sticker(message.sticker.file_id)
+    await message.answer_sticker(message.sticker.file_id, protect_content=True)
 
 
 @dp.callback_query_handler(
