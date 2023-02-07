@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 
@@ -9,6 +10,7 @@ load_dotenv()
 
 API_TOKEN = os.getenv('TELEGRAM_TOKEN')
 ID_MY = int(os.getenv('MY_ID'))
+CODE_WORDS = json.loads(os.environ['CODE_WORDS'])
 
 # Initialize bot and dispatcher
 bot = Bot(token=API_TOKEN)

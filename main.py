@@ -3,7 +3,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
 import database as db
-from bot_settings import ID_MY, dp, logging
+from bot_settings import CODE_WORDS, ID_MY, dp, logging
 from func_for_admin import log_answer
 from help_loc import help_loc_3, help_loc_4, help_loc_5, help_loc_8
 from locations import (location_eight, location_five, location_four,
@@ -108,7 +108,7 @@ async def get_text(message: types.Message) -> None:
     text = message.text.lower()
     logging.info(f'User {message.chat.id}, {message.chat.username} '
                  f'send text "{text}"')
-    if text == 'биоматериал':
+    if text in CODE_WORDS:
         await first_message(message)
     elif text == 'наслаждайся каждым моментом':
         await right_code_phrase(message)
