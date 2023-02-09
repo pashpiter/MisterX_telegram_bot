@@ -191,7 +191,7 @@ async def choose_location(
         await location_seven(message, second=True)
     elif 59.9614 <= lat <= 59.9624 and 30.3123 <= lon <= 30.3135:
         await location_eight(message)
-    elif 59.9642 <= lat <= 59.9647 and 30.3108 <= lon <= 30.3118:
+    elif 59.9704 <= lat <= 59.9711 and 30.3187 <= lon <= 30.3208:
         await location_nine(message)
     else:
         logging.info(f'User {message.chat.id}, {message.chat.username}'
@@ -267,7 +267,7 @@ async def right_code_phrase(message: types.Message) -> None:
     )
     await send_text(
         message, 'Если хочешь, то можешь ещё помочь нам вычислить преступника '
-        'и решить последнюю задачку, она тут недалеко. Хочешь?', kb
+        'и решить последнюю задачку.', kb
     )
 
 
@@ -288,7 +288,9 @@ async def nehochu_final(message: types.Message) -> None:
 async def hochu(message: types.Message) -> None:
     """Продолжение квеста после 8-й локации, в случае положительного ответа"""
     await send_text(
-        message, 'Хорошо! Тогда следуй на Большой проспек П.С. 71 лит Б',
+        message, 'Хорошо! Тогда следуй на пересечение '
+        '*улицы Профессора Попова* и *Аптекарского проспекта*. Или можно по '
+        'адресу *улица Профессора Попова 5*.',
         markup
     )
     await message.edit_reply_markup()
