@@ -9,7 +9,7 @@ from help_loc import help_loc_3, help_loc_4, help_loc_5, help_loc_8
 from locations import (location_eight, location_five, location_four,
                        location_nine, location_one, location_seven,
                        location_six, location_three, location_two)
-from markups import markup
+from markups import markup, hide_kb
 from send_msg import bot, send_photo, send_reply_text, send_text
 from tasks import task_location_nine, task_location_seven
 
@@ -253,7 +253,7 @@ async def right_code_phrase(message: types.Message) -> None:
                  'get right code phrase')
     await send_text(
         message, 'Это то что и было нужно! Спасибо за участие в миссии по '
-        'поимке _Мистера Х_.'
+        'поимке _Мистера Х_.', hide_kb
     )
     await send_text(
         message, 'Если несложно, то напиши отзыв о пройденном квесте по данной'
