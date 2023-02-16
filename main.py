@@ -22,10 +22,20 @@ class Form(StatesGroup):
 @dp.message_handler(commands=['start'])
 async def send_welcome(message: types.Message) -> types.Message:
     """Приветствие"""
-    await message.reply(
-        text=f'Привет {message.chat.username}! '
-        'Нужно кодовое слово, чтобы начать'
-    )
+    if message.chat.first_name:
+        await message.reply(
+            f'Привет {message.chat.first_name}! '
+            'Пришли кодовое слово, чтобы начать'
+        )
+    elif message.chat.username:
+        await message.reply(
+            f'Привет {message.chat.username}! '
+            'Пришли кодовое слово, чтобы начать'
+        )
+    else:
+        await message.reply(
+            'Привет незнакомец! Пришли кодовое слово, чтобы начать'
+        )
 
 
 @dp.message_handler(lambda message: message.chat.id == ID_MY, commands=['log'])
@@ -242,7 +252,7 @@ async def first_message(message: types.Message) -> None:
     )
     await send_text(
         message,
-        'Как доберешся - отправь свою локацию с помощью кнопки ниже 👇',
+        'Как доберешься - отправь свою локацию с помощью кнопки ниже 👇',
         markup
     )
 
